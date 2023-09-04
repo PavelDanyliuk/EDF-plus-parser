@@ -19,3 +19,6 @@
 
 # Go workspace file
 go.work
+
+# content
+content/example_big.edf
