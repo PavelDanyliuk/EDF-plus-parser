@@ -17,7 +17,7 @@ func TestInitReader(t *testing.T) {
 	reader := InitReader(&file)
 
 	expectedSignals := 5
-	if reader.signals != expectedSignals {
-		t.Errorf("Reader.signals = %d, expected %d", reader.signals, expectedSignals)
+	if reader.Headers.NumberOfSignals != expectedSignals {
+		t.Errorf("Reader.signals = %d, expected %d", reader.Headers.NumberOfSignals, expectedSignals)
 	}
 }

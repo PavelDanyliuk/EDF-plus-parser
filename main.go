@@ -22,11 +22,7 @@ func run() error {
 	}
 
 	reader := services.InitReader(&file)
-	headers := reader.GetHeaders()
-
-	for key, value := range headers {
-		fmt.Println(key, "-", value)
-	}
+	fmt.Println(reader.Headers.GetHeadersJSON())
 
 	return nil
 }
