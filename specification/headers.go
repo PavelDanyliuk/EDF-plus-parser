@@ -131,5 +131,3 @@ var HeadersOrder = []string{
 	"samples_per_record",
 	"reserved2",
 }
-
-type ParsedHeaders map[string][]string
