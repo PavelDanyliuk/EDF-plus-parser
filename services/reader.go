@@ -1,15 +1,22 @@
 package services
 
+import (
+	"bufio"
+	"os"
+)
+
 type Reader struct {
 	Headers     *Headers
 	Channels    *Channels
 	Annotations *Annotations
 }
 
-func InitReader(file *[]byte) *Reader {
-	headers := &Headers{file: file}
-	channels := &Channels{file: file}
-	annotations := &Annotations{file: file}
+func InitReader(file *os.File) *Reader {
+	bufioReader := bufio.NewReader(file)
+
+	headers := &Headers{}
+	channels := &Channels{}
+	annotations := &Annotations{}
 
 	reader := &Reader{
 		Headers:     headers,
@@ -17,7 +24,7 @@ func InitReader(file *[]byte) *Reader {
 		Annotations: annotations,
 	}
 
-	reader.Headers.ParseHeaders()
+	reader.Headers.Parse(bufioReader)
 
 	return reader
 }
