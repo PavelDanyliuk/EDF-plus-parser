@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 
@@ -10,8 +11,6 @@ import (
 )
 
 type Headers struct {
-	file *[]byte
-
 	Version            string   `json:"version"`
 	PatientId          string   `json:"patiend_id"`
 	RecordId           string   `json:"record_id"`
@@ -21,7 +20,7 @@ type Headers struct {
 	Reserved1          string   `json:"reserved1"`
 	NumberOfRecords    string   `json:"number_of_records"`
 	RecordDuration     string   `json:"record_duration"`
-	NumberOfSignals    int      `json:"number_of_signals"`
+	NumberOfSignals    string   `json:"number_of_signals"`
 	Labels             []string `json:"labels"`
 	TransducerTypes    []string `json:"transducer_types"`
 	PhysicalDimensions []string `json:"physical_dimensions"`
@@ -34,40 +33,58 @@ type Headers struct {
 	Reserved2          []string `json:"reserved2"`
 }
 
-func (h *Headers) ParseHeaders() {
-	temp := make(map[string][]string)
+func (h *Headers) Parse(reader io.Reader) {
+	temp := make(map[string]string)
 
-	signals, _ := strconv.Atoi(
-		strings.TrimSpace(
-			h.readHeader("number_of_signals")[0],
-		),
-	) // []string -> int
+	/**
+	 * Reading successively number of bytes and write them to the data.
+	 * header_Size - represents how many bytes are reserved for a header.
+	 */
+	for _, header := range specification.HeadersStringLike {
+		data := make([]byte, header.Size)
 
-	h.NumberOfSignals = signals
+		_, err := io.ReadFull(reader, data)
+		if err != nil {
+			panic("Can not read a byte range") // TODO: handle errors properly
+		}
 
-	for key := range specification.HeadersSpecification {
-		temp[key] = h.readHeader(key)
+		temp[header.Name] = strings.TrimSpace(string(data))
 	}
 
-	h.Version = temp["version"][0]
-	h.PatientId = temp["patient_id"][0]
-	h.RecordId = temp["record_id"][0]
-	h.StartDate = temp["start_date"][0]
-	h.StartTime = temp["start_time"][0]
-	h.HeaderSize = temp["header_Size"][0]
-	h.Reserved1 = temp["reserved1"][0]
-	h.NumberOfRecords = temp["number_of_records"][0]
-	h.RecordDuration = temp["record_duration"][0]
-	h.Labels = temp["labels"]
-	h.TransducerTypes = temp["transducer_types"]
-	h.PhysicalDimensions = temp["physical_dimensions"]
-	h.PhysicalMinimums = temp["physical_minimums"]
-	h.PhysicalMaximums = temp["physical_maximums"]
-	h.DigitalMinimums = temp["digital_minimums"]
-	h.DigitalMaximums = temp["digital_maximums"]
-	h.Prefiltering = temp["prefiltering"]
-	h.SamplesPerRecord = temp["samples_per_record"]
-	h.Reserved2 = temp["reserved2"]
+	h.Version = temp["version"]
+	h.PatientId = temp["patient_id"]
+	h.RecordId = temp["record_id"]
+	h.StartDate = temp["start_date"]
+	h.StartTime = temp["start_time"]
+	h.HeaderSize = temp["header_Size"]
+	h.Reserved1 = temp["reserved1"]
+	h.NumberOfRecords = temp["number_of_records"]
+	h.RecordDuration = temp["record_duration"]
+	h.NumberOfSignals = temp["number_of_signals"]
+
+	temp2 := make(map[string][]string)
+	for _, header := range specification.HeadersArrayLike {
+		signals, _ := strconv.Atoi(h.NumberOfSignals)
+		data := make([]byte, header.Size*signals)
+
+		_, err := io.ReadFull(reader, data)
+		if err != nil {
+			panic("Can not read a byte range") // TODO: handle errors properly
+		}
+
+		temp2[header.Name] = strings.Fields(strings.TrimSpace(string(data)))
+	}
+
+	h.Labels = temp2["labels"]
+	h.TransducerTypes = temp2["transducer_types"]
+	h.PhysicalDimensions = temp2["physical_dimensions"]
+	h.PhysicalMinimums = temp2["physical_minimums"]
+	h.PhysicalMaximums = temp2["physical_maximums"]
+	h.DigitalMinimums = temp2["digital_minimums"]
+	h.DigitalMaximums = temp2["digital_maximums"]
+	h.Prefiltering = temp2["prefiltering"]
+	h.SamplesPerRecord = temp2["samples_per_record"]
+	h.Reserved2 = temp2["reserved2"]
 }
 
 func (h *Headers) GetHeadersJSON() ([]byte, error) {
@@ -78,58 +95,4 @@ func (h *Headers) GetHeadersJSON() ([]byte, error) {
 	}
 
 	return json, nil
-}
-
-func (h *Headers) readHeader(headerName string) []string {
-	target := specification.HeadersSpecification[headerName]
-	start, end := h.byteRange(headerName)
-	header := (*h.file)[start : end+1]
-
-	if target.IsArray {
-		var result []string
-
-		for i := 0; i < h.NumberOfSignals; i++ {
-			val := header[i*target.Size : (i+1)*target.Size]
-			// string() converts byte to string
-			// .Fields splits a string by words
-			result = append(result, strings.Fields(strings.TrimSpace(string(val)))...)
-		}
-
-		return result
-	}
-
-	return []string{strings.TrimSpace(string(header))}
-}
-
-func (h *Headers) byteRange(headerName string) (int, int) {
-	target, ok := specification.HeadersSpecification[headerName]
-
-	if !ok {
-		panic("Can not read a header name from the specification!" + "Header: " + headerName)
-	}
-
-	startByte := 0
-	endByte := 0
-
-	for i := 0; i < target.Position; i++ {
-		header := specification.HeadersSpecification[specification.HeadersOrder[i]]
-
-		if header.IsArray {
-			startByte += h.NumberOfSignals * header.Size
-		} else {
-			startByte += header.Size
-		}
-	}
-
-	targetSize := 0
-
-	if target.IsArray {
-		targetSize = h.NumberOfSignals * target.Size
-	} else {
-		targetSize = target.Size
-	}
-
-	endByte = startByte + targetSize - 1
-
-	return startByte, endByte
 }

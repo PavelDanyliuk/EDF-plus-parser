@@ -1,133 +1,92 @@
 package specification
 
 type Header struct {
-	IsArray  bool
-	Position int
-	Size     int
+	Name string
+	Size int
 }
 
-var HeadersSpecification = map[string]Header{
-	"version": {
-		IsArray:  false,
-		Position: 0,
-		Size:     8,
+var HeadersStringLike = []Header{
+	{
+		Name: "version",
+		Size: 8,
 	},
-	"patient_id": {
-		IsArray:  false,
-		Position: 1,
-		Size:     80,
+	{
+		Name: "patient_id",
+		Size: 80,
 	},
-	"record_id": {
-		IsArray:  false,
-		Position: 2,
-		Size:     80,
+	{
+		Name: "record_id",
+		Size: 80,
 	},
-	"start_date": {
-		IsArray:  false,
-		Position: 3,
-		Size:     8,
+	{
+		Name: "start_date",
+		Size: 8,
 	},
-	"start_time": {
-		IsArray:  false,
-		Position: 4,
-		Size:     8,
+	{
+		Name: "start_time",
+		Size: 8,
 	},
-	"header_Size": {
-		IsArray:  false,
-		Position: 5,
-		Size:     8,
+	{
+		Name: "header_Size",
+		Size: 8,
 	},
-	"reserved1": {
-		IsArray:  false,
-		Position: 6,
-		Size:     44,
+	{
+		Name: "reserved1",
+		Size: 44,
 	},
-	"number_of_records": {
-		IsArray:  false,
-		Position: 7,
-		Size:     8,
+	{
+		Name: "number_of_records",
+		Size: 8,
 	},
-	"record_duration": {
-		IsArray:  false,
-		Position: 8,
-		Size:     8,
+	{
+		Name: "record_duration",
+		Size: 8,
 	},
-	"number_of_signals": {
-		IsArray:  false,
-		Position: 9,
-		Size:     4,
-	},
-	"labels": {
-		IsArray:  true,
-		Position: 10,
-		Size:     16,
-	},
-	"transducer_types": {
-		IsArray:  true,
-		Position: 11,
-		Size:     80,
-	},
-	"physical_dimensions": {
-		IsArray:  true,
-		Position: 12,
-		Size:     8,
-	},
-	"physical_minimums": {
-		IsArray:  true,
-		Position: 13,
-		Size:     8,
-	},
-	"physical_maximums": {
-		IsArray:  true,
-		Position: 14,
-		Size:     8,
-	},
-	"digital_minimums": {
-		IsArray:  true,
-		Position: 15,
-		Size:     8,
-	},
-	"digital_maximums": {
-		IsArray:  true,
-		Position: 16,
-		Size:     8,
-	},
-	"prefiltering": {
-		IsArray:  true,
-		Position: 17,
-		Size:     80,
-	},
-	"samples_per_record": {
-		IsArray:  true,
-		Position: 18,
-		Size:     8,
-	},
-	"reserved2": {
-		IsArray:  true,
-		Position: 19,
-		Size:     32,
+	{
+		Name: "number_of_signals",
+		Size: 4,
 	},
 }
 
-var HeadersOrder = []string{
-	"version",
-	"patient_id",
-	"record_id",
-	"start_date",
-	"start_time",
-	"header_Size",
-	"reserved1",
-	"number_of_records",
-	"record_duration",
-	"number_of_signals",
-	"labels",
-	"transducer_types",
-	"physical_dimensions",
-	"physical_minimums",
-	"physical_maximums",
-	"digital_minimums",
-	"digital_maximums",
-	"prefiltering",
-	"samples_per_record",
-	"reserved2",
+var HeadersArrayLike = []Header{
+	{
+		Name: "labels",
+		Size: 16,
+	},
+	{
+		Name: "transducer_types",
+		Size: 80,
+	},
+	{
+		Name: "physical_dimensions",
+		Size: 8,
+	},
+	{
+		Name: "physical_minimums",
+		Size: 8,
+	},
+	{
+		Name: "physical_maximums",
+		Size: 8,
+	},
+	{
+		Name: "digital_minimums",
+		Size: 8,
+	},
+	{
+		Name: "digital_maximums",
+		Size: 8,
+	},
+	{
+		Name: "prefiltering",
+		Size: 80,
+	},
+	{
+		Name: "samples_per_record",
+		Size: 8,
+	},
+	{
+		Name: "reserved2",
+		Size: 32,
+	},
 }
