@@ -64,15 +64,20 @@ func (h *Headers) Parse(reader io.Reader) {
 
 	temp2 := make(map[string][]string)
 	for _, header := range specification.HeadersArrayLike {
+		var result []string
 		signals, _ := strconv.Atoi(h.NumberOfSignals)
-		data := make([]byte, header.Size*signals)
 
-		_, err := io.ReadFull(reader, data)
-		if err != nil {
-			panic("Can not read a byte range") // TODO: handle errors properly
+		for i := 0; i < signals; i++ {
+			data := make([]byte, header.Size)
+			_, err := io.ReadFull(reader, data)
+			if err != nil {
+				panic("Can not read a byte range") // TODO: handle errors properly
+			}
+
+			result = append(result, strings.TrimSpace(string(data)))
 		}
 
-		temp2[header.Name] = strings.Fields(strings.TrimSpace(string(data)))
+		temp2[header.Name] = result
 	}
 
 	h.Labels = temp2["labels"]
