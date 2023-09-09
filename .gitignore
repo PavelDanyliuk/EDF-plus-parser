@@ -13,6 +13,7 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+build
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
@@ -22,3 +23,7 @@ go.work
 
 # content
 content/example_big.edf
+index.html
+
+# idea
+.DS_Store
