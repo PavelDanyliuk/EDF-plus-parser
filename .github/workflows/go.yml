@@ -32,7 +32,7 @@ jobs:
       run: make build_wasm
 
     - name: Test
-      run: go test -v ./...
+      run: go test -tags test -v ./...
 
     - name: Lint
       run: golangci-lint run
