@@ -25,11 +25,14 @@ jobs:
       run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
       shell: bash
 
-    - name: Build
-      run: go build -v ./main.go
+    - name: Build darwin
+      run: make build_darwin
+
+    - name: Build WASM
+      run: make build_wasm
 
     - name: Test
-      run: go test -v ./...
+      run: go test -tags test -v ./...
 
     - name: Lint
       run: golangci-lint run
