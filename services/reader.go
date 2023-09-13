@@ -24,7 +24,9 @@ func InitReader(source interface{}) *Reader {
 	}
 
 	headers := &Headers{}
-	channels := &Channels{}
+	channels := &Channels{
+		headers: headers,
+	}
 	annotations := &Annotations{}
 
 	reader := &Reader{
@@ -34,6 +36,7 @@ func InitReader(source interface{}) *Reader {
 	}
 
 	reader.Headers.Parse(r)
+	reader.Channels.Parse(r)
 
 	return reader
 }

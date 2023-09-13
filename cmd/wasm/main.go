@@ -15,6 +15,7 @@ func main() {
 
 	js.Global().Set("initReader", js.FuncOf(initReader))
 	js.Global().Set("getHeaders", js.FuncOf(getHeaders))
+	js.Global().Set("getSignals", js.FuncOf(getSignals))
 
 	<-channel
 
@@ -30,6 +31,13 @@ func initReader(this js.Value, args []js.Value) interface{} {
 
 func getHeaders(this js.Value, args []js.Value) interface{} {
 	json, _ := reader.Headers.GetHeadersJSON()
+	jsData := js.Global().Get("JSON").Call("parse", string(json))
+
+	return jsData
+}
+
+func getSignals(this js.Value, args []js.Value) interface{} {
+	json, _ := reader.Channels.GetAllSignalsJSON()
 	jsData := js.Global().Get("JSON").Call("parse", string(json))
 
 	return jsData
