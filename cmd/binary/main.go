@@ -15,6 +15,8 @@ func main() {
 }
 
 var filePath = flag.String("filePath", "./content/example_small.edf", "Path to the EDF file.")
+var headers = flag.String("headers", "false", "")
+var signals = flag.String("signals", "false", "")
 
 func run() error {
 	flag.Parse()
@@ -26,7 +28,14 @@ func run() error {
 	defer file.Close()
 
 	reader := services.InitReader(file)
-	fmt.Println(reader.Headers.GetHeadersJSON())
+
+	if *headers == "true" {
+		fmt.Println(reader.Headers.GetHeadersJSON())
+	}
+
+	if *signals == "true" {
+		fmt.Println(reader.Channels.GetAllSignalsJSON())
+	}
 
 	return nil
 }
